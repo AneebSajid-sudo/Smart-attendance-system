@@ -1,0 +1,9 @@
+flask
+flask-cors
+face_recognition
+opencv-python
+numpy
+Pillow
+psycopg2-binary
+python-dotenv
+gunicorn
