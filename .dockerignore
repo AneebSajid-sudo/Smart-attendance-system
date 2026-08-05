@@ -1,0 +1,12 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+*.pyo
+attendance.db
+student_images/
+Dockerfile
+.dockerignore
+llm_handoff.md
+README.md
+*.docx
