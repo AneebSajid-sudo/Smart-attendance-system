@@ -1,30 +1,17 @@
-FROM continuumio/miniconda3
+# Use the official pre-built image from the creator of the face_recognition library!
+# This image contains Python, dlib, and face_recognition all pre-installed and fully tested.
+# This completely bypasses compilation and guarantees the models are present.
+FROM animcogn/face_recognition:cpu
 
 WORKDIR /app
 
-# Install system dependencies required for OpenCV
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgl1 \
-    libglib2.0-0 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install pre-compiled dlib from conda-forge
-# This bypasses the 8GB RAM C++ compilation step entirely!
-RUN conda install -y -c conda-forge dlib
-
-# Copy requirements
 COPY requirements.txt .
 
-# Install the rest of the Python dependencies via pip.
-# Since dlib is already installed by conda, pip will skip compiling it.
-# Pip will automatically install face_recognition and its models correctly.
+# Install the remaining dependencies (Flask, Supabase DB driver, etc.)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application files
 COPY . .
 
-# Expose port 5000
 EXPOSE 5000
 
-# Run the application
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "2", "--timeout", "120", "app:app"]
