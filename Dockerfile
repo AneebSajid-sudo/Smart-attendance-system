@@ -1,26 +1,29 @@
-FROM python:3.10-slim
+FROM continuumio/miniconda3
 
-# Install system dependencies required for OpenCV and dlib
+WORKDIR /app
+
+# Install system dependencies required for OpenCV
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    cmake \
     libgl1 \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+# Install pre-compiled face_recognition and dlib from conda-forge
+# This bypasses the 8GB RAM C++ compilation step entirely!
+RUN conda install -y -c conda-forge face_recognition
 
-# Copy requirements first to leverage Docker cache
+# Copy requirements
 COPY requirements.txt .
 
-# Install Python dependencies (this step compiles dlib and takes a few minutes)
+# Install the rest of the Python dependencies via pip
+# Pip will detect that face_recognition and dlib are already installed and skip them.
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application
+# Copy application files
 COPY . .
 
-# Expose port 5000 for Flask/Gunicorn
+# Expose port 5000
 EXPOSE 5000
 
-# Run the application using gunicorn
+# Run the application
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "2", "--timeout", "120", "app:app"]
