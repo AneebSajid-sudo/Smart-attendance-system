@@ -17,7 +17,8 @@ app.secret_key = "sas-rbac-secret-key-2026-xK9mP2"
 ALLOWED_ORIGINS = [
     "https://aneebkhan.github.io",
     "http://localhost:5000",
-    "http://127.0.0.1:5000"
+    "http://127.0.0.1:5000",
+    r"https://.*\.onrender\.com"
 ]
 CORS(app, supports_credentials=True, origins=ALLOWED_ORIGINS)
 app.config.update(
