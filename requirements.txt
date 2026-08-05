@@ -1,6 +1,6 @@
 flask
 flask-cors
-opencv-python
+opencv-python-headless
 numpy
 Pillow
 psycopg2-binary
