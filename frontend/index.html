@@ -1,205 +1,533 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smart Attendance System</title>
+  <title>Aura Attendance — Smart AI System</title>
   <meta name="description" content="AI-powered face recognition attendance system for universities" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
     rel="stylesheet" />
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <!-- Legacy component styles (for JS-injected HTML) -->
   <link rel="stylesheet" href="css/style.css" />
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#c3c0ff",
+            "primary-container": "#4f46e5",
+            "on-primary": "#1d00a5",
+            "on-primary-container": "#dad7ff",
+            "secondary": "#d0bcff",
+            "secondary-container": "#571bc1",
+            "on-secondary": "#3c0091",
+            "on-secondary-container": "#c4abff",
+            "tertiary": "#7bd0ff",
+            "tertiary-container": "#00678c",
+            "on-tertiary": "#00354a",
+            "on-tertiary-container": "#b2e1ff",
+            "surface": "#0e131f",
+            "surface-dim": "#0e131f",
+            "surface-bright": "#343946",
+            "surface-container-lowest": "#080e1a",
+            "surface-container-low": "#161c28",
+            "surface-container": "#1a202c",
+            "surface-container-high": "#242a36",
+            "surface-container-highest": "#2f3542",
+            "surface-variant": "#2f3542",
+            "on-surface": "#dde2f3",
+            "on-surface-variant": "#c7c4d8",
+            "background": "#0e131f",
+            "on-background": "#dde2f3",
+            "outline": "#918fa1",
+            "outline-variant": "#464555",
+            "error": "#ffb4ab",
+            "error-container": "#93000a",
+            "on-error": "#690005",
+            "on-error-container": "#ffdad6",
+            "inverse-surface": "#dde2f3",
+            "inverse-on-surface": "#2b303d",
+            "inverse-primary": "#4d44e3",
+          },
+          fontFamily: { sans: ["Plus Jakarta Sans", "sans-serif"] },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ── Glassmorphism ─────────────────────── */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-top-color: rgba(255, 255, 255, 0.2);
+      border-left-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 40px 40px rgba(79, 70, 229, 0.1);
+    }
+
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-top-color: rgba(255, 255, 255, 0.1);
+      border-left-color: rgba(255, 255, 255, 0.08);
+    }
+
+    /* ── Input ─────────────────────────────── */
+    .input-dark {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      color: #dde2f3;
+    }
+
+    .input-dark:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 8px rgba(79, 70, 229, 0.5);
+      outline: none;
+    }
+
+    .input-dark::placeholder {
+      color: rgba(199, 196, 216, 0.5);
+    }
+
+    /* ── Buttons ───────────────────────────── */
+    .btn-primary {
+      background: linear-gradient(135deg, #4f46e5, #571bc1);
+      transition: all 0.3s ease;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 18px rgba(79, 70, 229, 0.6);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #dde2f3;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .btn-danger {
+      background: rgba(147, 0, 10, 0.7);
+      color: #ffdad6;
+      transition: all 0.2s;
+    }
+
+    .btn-danger:hover {
+      background: rgba(147, 0, 10, 1);
+    }
+
+    /* ── Login pulse ───────────────────────── */
+    @keyframes subtlePulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+      }
+    }
+
+    .pulse-btn {
+      animation: subtlePulse 2s infinite;
+    }
+
+    /* ── Sidebar nav active ─────────────────── */
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 24px;
+      color: #c7c4d8;
+      transition: all 0.2s;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .nav-item:hover {
+      color: #dde2f3;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-item.active {
+      color: #c3c0ff;
+      background: linear-gradient(90deg, rgba(79, 70, 229, 0.25), transparent);
+      border-left: 3px solid #c3c0ff;
+    }
+
+    /* ── Pages ─────────────────────────────── */
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* ── Modal ─────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 14, 26, 0.8);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.hidden {
+      display: none;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 640px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: 16px;
+    }
+
+    /* ── Toast ─────────────────────────────── */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast {
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast.success {
+      background: #1a2e1a;
+      border: 1px solid #4ade80;
+      color: #4ade80;
+    }
+
+    .toast.error {
+      background: #2e1a1a;
+      border: 1px solid #f87171;
+      color: #f87171;
+    }
+
+    .toast.info {
+      background: #1a1f2e;
+      border: 1px solid #7bd0ff;
+      color: #7bd0ff;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(110%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* ── Table ─────────────────────────────── */
+    .aura-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .aura-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: #918fa1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .aura-table td {
+      padding: 14px 16px;
+      font-size: 14px;
+      color: #dde2f3;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .aura-table tr:hover td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* ── Tag badges ────────────────────────── */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+
+    .badge-admin {
+      background: rgba(79, 70, 229, 0.25);
+      color: #c3c0ff;
+    }
+
+    .badge-teacher {
+      background: rgba(87, 27, 193, 0.25);
+      color: #d0bcff;
+    }
+
+    /* ── Webcam/Camera ─────────────────────── */
+    #webcam-preview,
+    #student-webcam,
+    #attendance-video {
+      border-radius: 12px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .face-box {
+      position: absolute;
+      border: 2px solid #7bd0ff;
+      border-radius: 4px;
+    }
+
+    .face-label {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.7);
+      color: #7bd0ff;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      top: -22px;
+      left: 0;
+      white-space: nowrap;
+    }
+
+    /* ── Scrollbar ─────────────────────────── */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 99px;
+    }
+
+    /* ── Material icons defaults ────────────── */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+
+    .fill {
+      font-variation-settings: 'FILL' 1 !important;
+    }
+  </style>
 </head>
 
-<body>
+<body class="bg-background text-on-surface font-sans antialiased">
 
-  <!-- ── Global Aurora Background ──────────────────────────── -->
-  <div class="global-bg">
-    <div class="login-orb orb-1"></div>
-    <div class="login-orb orb-2"></div>
-    <div class="login-orb orb-3"></div>
-  </div>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- LOGIN SCREEN                                                    -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="login-screen" class="fixed inset-0 flex items-center justify-center overflow-hidden">
 
-  <!-- ── Login Screen ──────────────────────────────────────── -->
-  <div id="login-screen" class="login-screen">
-    <div class="login-card glass">
-      <div class="login-logo">
-        <div class="logo-icon">
-          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="24" cy="24" r="22" stroke="url(#grad)" stroke-width="2.5" />
-            <path d="M14 32c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="url(#grad)" stroke-width="2.5"
-              stroke-linecap="round" />
-            <circle cx="24" cy="18" r="5" stroke="url(#grad)" stroke-width="2.5" />
-            <path d="M10 14l4 4M38 14l-4 4M24 8v4" stroke="url(#grad)" stroke-width="2" stroke-linecap="round" />
-            <defs>
-              <linearGradient id="grad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#818cf8" />
-                <stop offset="1" stop-color="#38bdf8" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-        <h1>Smart Attendance</h1>
-        <p>Admin &amp; Teacher Portal</p>
-        <small style="display:block;margin-top:6px;color:#475569;font-size:.73rem">Students are recognised by face — no
-          login needed for them</small>
+    <!-- Animated WebGL Background -->
+    <div class="absolute inset-0 z-0">
+      <canvas id="shader-canvas" style="display:block;width:100%;height:100%"></canvas>
+      <script>
+          (function () {
+            const c = document.getElementById('shader-canvas');
+            function sync() { const w = c.clientWidth || 1280, h = c.clientHeight || 720; if (c.width !== w || c.height !== h) { c.width = w; c.height = h; } }
+            if (typeof ResizeObserver !== 'undefined') new ResizeObserver(sync).observe(c);
+            sync();
+            const gl = c.getContext('webgl') || c.getContext('experimental-webgl'); if (!gl) return;
+            const vs = `attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}`;
+            const fs = `precision highp float;uniform float t;uniform vec2 r;void main(){vec2 uv=gl_FragCoord.xy/r;float ti=t*0.2;vec3 c1=vec3(0.31,0.27,0.9),c2=vec3(0.54,0.17,0.89),c3=vec3(0.05,0.07,0.12);float w1=sin(uv.x*2.0+ti)*0.5+0.5,w2=cos(uv.y*3.0-ti*1.5)*0.5+0.5,w3=sin((uv.x+uv.y)*1.5+ti*0.8)*0.5+0.5;vec3 col=mix(c3,c1,w1*0.4);col=mix(col,c2,w2*0.3);col+=c3*(1.0-(w1+w2+w3)/3.0);gl_FragColor=vec4(col,1);}`;
+            function sh(type, src) { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+            const prog = gl.createProgram(); gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(prog); gl.useProgram(prog);
+            const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+            const pp = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(pp); gl.vertexAttribPointer(pp, 2, gl.FLOAT, false, 0, 0);
+            const ut = gl.getUniformLocation(prog, 't'), ur = gl.getUniformLocation(prog, 'r');
+            function render(time) { if (typeof ResizeObserver === 'undefined') sync(); gl.viewport(0, 0, c.width, c.height); if (ut) gl.uniform1f(ut, time * .001); if (ur) gl.uniform2f(ur, c.width, c.height); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); requestAnimationFrame(render); }
+            render(0);
+          })();
+      </script>
+    </div>
+    <div class="absolute inset-0 bg-background/50 z-10"></div>
+
+    <!-- Login Card -->
+    <div class="relative z-20 w-full max-w-md px-6">
+      <div class="text-center mb-12">
+        <h1
+          class="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary mb-1 tracking-tight">
+          Aura AI</h1>
+        <p class="text-on-surface-variant text-sm">Smart Attendance — Admin &amp; Teacher Portal</p>
+        <p class="text-outline text-xs mt-1">Students are recognised by face — no login needed</p>
       </div>
-      <form id="login-form" class="login-form">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input id="username" type="text" placeholder="Enter username" autocomplete="username" required />
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input id="password" type="password" placeholder="Enter password" autocomplete="current-password" required />
-        </div>
-        <div id="login-error" class="error-msg hidden"></div>
-        <button type="submit" class="btn btn-primary btn-full" id="login-btn">
-          <span class="btn-text">Sign In</span>
-          <span class="btn-spinner hidden"></span>
-        </button>
-      </form>
+      <div class="glass-card rounded-2xl p-8">
+        <h2 class="text-2xl font-bold text-on-surface mb-8 text-center">Sign In</h2>
+        <form id="login-form" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-2"
+              for="username">Username</label>
+            <div class="relative">
+              <span
+                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">person</span>
+              <input class="input-dark w-full rounded-xl py-3 pl-10 pr-4 font-medium" id="username" type="text"
+                placeholder="Enter your username" autocomplete="username" required />
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-2"
+              for="password">Password</label>
+            <div class="relative">
+              <span
+                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">lock</span>
+              <input class="input-dark w-full rounded-xl py-3 pl-10 pr-4 font-medium" id="password" type="password"
+                placeholder="Enter your password" autocomplete="current-password" required />
+            </div>
+          </div>
+          <div id="login-error"
+            class="hidden text-error text-sm font-semibold bg-error-container/30 border border-error/30 rounded-lg px-4 py-2">
+          </div>
+          <button
+            class="btn-primary pulse-btn w-full rounded-xl py-3 mt-4 font-bold text-base flex items-center justify-center gap-2"
+            type="submit" id="login-btn">
+            <span class="btn-text">Authenticate</span>
+            <span class="material-symbols-outlined fill text-lg">login</span>
+            <span class="btn-spinner hidden">...</span>
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 
-  <!-- ── Main App Shell ────────────────────────────────────── -->
-  <div id="app" class="app hidden">
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- MAIN APP                                                        -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="app" class="hidden flex min-h-screen">
 
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-logo">
-          <div class="logo-icon sm">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="24" cy="24" r="22" stroke="url(#grad2)" stroke-width="2.5" />
-              <path d="M14 32c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="url(#grad2)" stroke-width="2.5"
-                stroke-linecap="round" />
-              <circle cx="24" cy="18" r="5" stroke="url(#grad2)" stroke-width="2.5" />
-              <defs>
-                <linearGradient id="grad2" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#818cf8" />
-                  <stop offset="1" stop-color="#38bdf8" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          <span>SmartAttend</span>
+    <!-- Aurora ambient background -->
+    <div class="fixed inset-0 z-0 pointer-events-none"
+      style="background:radial-gradient(circle at 15% 50%,rgba(79,70,229,0.07) 0%,transparent 40%),radial-gradient(circle at 85% 30%,rgba(123,208,255,0.04) 0%,transparent 40%)">
+    </div>
+
+    <!-- ── Sidebar ──────────────────────────────────────────────── -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-screen w-64 z-40 flex flex-col py-6 border-r border-white/8
+                              bg-surface-container-lowest/80 backdrop-blur-xl transition-transform duration-300">
+      <!-- Brand -->
+      <div class="px-6 mb-8 flex items-center gap-3">
+        <div
+          class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-container to-secondary-container flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-white text-lg fill">admin_panel_settings</span>
         </div>
-        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
-        </button>
+        <div>
+          <div
+            class="font-extrabold text-lg bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary leading-tight">
+            Aura AI</div>
+          <div class="text-xs text-on-surface-variant">Smart Attendance</div>
+        </div>
       </div>
 
-      <nav class="sidebar-nav">
+      <!-- Nav -->
+      <nav class="flex-1 flex flex-col gap-0.5 px-2">
         <a class="nav-item active" data-page="dashboard" href="#dashboard">
-          <span class="nav-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7" rx="1" />
-              <rect x="14" y="3" width="7" height="7" rx="1" />
-              <rect x="3" y="14" width="7" height="7" rx="1" />
-              <rect x="14" y="14" width="7" height="7" rx="1" />
-            </svg>
-          </span>
-          <span class="nav-label">Dashboard</span>
+          <span class="material-symbols-outlined fill">dashboard</span> Dashboard
         </a>
         <a class="nav-item" data-page="students" href="#students">
-          <span class="nav-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-          </span>
-          <span class="nav-label">Students</span>
+          <span class="material-symbols-outlined">group</span> Students
         </a>
         <a class="nav-item" data-page="courses" href="#courses">
-          <span class="nav-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-            </svg>
-          </span>
-          <span class="nav-label">Courses</span>
+          <span class="material-symbols-outlined">book</span> Courses
         </a>
         <a class="nav-item" data-page="attendance" href="#attendance">
-          <span class="nav-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-              <circle cx="12" cy="13" r="4" />
-            </svg>
-          </span>
-          <span class="nav-label">Attendance</span>
+          <span class="material-symbols-outlined">event_available</span> Attendance
         </a>
         <a class="nav-item" data-page="reports" href="#reports">
-          <span class="nav-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="16" y1="13" x2="8" y2="13" />
-              <line x1="16" y1="17" x2="8" y2="17" />
-              <polyline points="10 9 9 9 8 9" />
-            </svg>
-          </span>
-          <span class="nav-label">Reports</span>
+          <span class="material-symbols-outlined">assessment</span> Reports
         </a>
-        <a class="nav-item" data-page="users" href="#users">
-          <span class="nav-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              <line x1="19" y1="8" x2="19" y2="14" />
-              <line x1="22" y1="11" x2="16" y2="11" />
-            </svg>
-          </span>
-          <span class="nav-label">Users</span>
+        <a class="nav-item admin-only" data-page="users" href="#users">
+          <span class="material-symbols-outlined">manage_accounts</span> Users
         </a>
       </nav>
 
-      <div class="sidebar-footer">
-        <div class="user-badge" id="profile-btn" title="Profile Settings" style="cursor:pointer">
-          <div class="user-avatar" id="user-avatar">A</div>
-          <div class="user-info">
-            <span id="logged-user">Admin</span>
-            <small id="user-role-label">Administrator</small>
+      <!-- Footer: user info + logout -->
+      <div class="px-4 pt-4 border-t border-white/5 mt-4">
+        <div id="profile-btn"
+          class="flex items-center gap-3 mb-3 cursor-pointer hover:bg-white/5 rounded-xl p-2 transition">
+          <div id="user-avatar"
+            class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-container to-secondary-container flex items-center justify-center font-bold text-white text-sm shrink-0">
+            A</div>
+          <div class="flex-1 min-w-0">
+            <div id="logged-user" class="font-semibold text-sm text-on-surface truncate">Admin</div>
+            <div id="user-role-label" class="text-xs text-on-surface-variant">Administrator</div>
           </div>
-          <span class="role-badge role-admin" id="user-role-badge">ADMIN</span>
+          <span id="user-role-badge" class="badge badge-admin">ADMIN</span>
         </div>
-        <button class="btn-logout" id="logout-btn" title="Logout">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
+        <button id="logout-btn"
+          class="btn-secondary w-full rounded-xl py-2.5 font-semibold text-sm flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-lg">logout</span> Logout
         </button>
       </div>
     </aside>
 
-    <!-- Main Content -->
-    <main class="main-content" id="main-content">
+    <!-- ── Main Content ─────────────────────────────────────────── -->
+    <main id="main-content" class="flex-1 ml-64 flex flex-col min-h-screen relative z-10">
 
-      <!-- Top Bar -->
-      <header class="topbar">
-        <button class="mobile-menu-btn" id="mobile-menu-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
+      <!-- Topbar -->
+      <header class="sticky top-0 z-30 flex items-center justify-between px-8 h-16
+                   bg-surface-container-lowest/70 backdrop-blur-xl border-b border-white/8">
+        <button id="mobile-menu-btn" class="lg:hidden text-on-surface-variant hover:text-on-surface">
+          <span class="material-symbols-outlined">menu</span>
         </button>
-        <div class="topbar-title" id="page-title">Dashboard</div>
-        <div class="topbar-actions" id="topbar-actions"></div>
+        <div id="page-title"
+          class="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Dashboard
+        </div>
+        <div id="topbar-actions" class="flex items-center gap-2"></div>
       </header>
 
-      <!-- Page Views -->
-      <div class="page-container">
+      <!-- Pages -->
+      <div class="flex-1 p-8">
         <div id="page-dashboard" class="page active"></div>
         <div id="page-students" class="page"></div>
         <div id="page-courses" class="page"></div>
@@ -210,21 +538,30 @@
     </main>
   </div>
 
-  <!-- Global Toast -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- GLOBAL TOAST                                                    -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
   <div id="toast-container"></div>
 
-  <!-- Global Modal -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- GLOBAL MODAL                                                    -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
   <div id="modal-overlay" class="modal-overlay hidden">
-    <div class="modal glass" id="modal-box">
-      <div class="modal-header">
-        <h3 id="modal-title"></h3>
-        <button class="modal-close" id="modal-close">✕</button>
+    <div class="glass-card modal-box rounded-2xl" id="modal-box">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-white/8">
+        <h3 id="modal-title" class="font-bold text-lg text-on-surface"></h3>
+        <button id="modal-close"
+          class="text-on-surface-variant hover:text-on-surface transition w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10">
+          <span class="material-symbols-outlined">close</span>
+        </button>
       </div>
-      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-body p-6" id="modal-body"></div>
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SCRIPTS (unchanged)                                             -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
   <script src="js/app.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/students.js"></script>
