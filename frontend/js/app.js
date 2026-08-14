@@ -2,11 +2,7 @@
    app.js — SPA Router + Global Utilities + RBAC
 ═══════════════════════════════════════════════ */
 
-const PROD_API_URL = "https://your-flask-app.onrender.com/api"; // You will replace this later!
-
-const API = window.location.hostname.includes("github.io")
-    ? PROD_API_URL
-    : (window.location.protocol === "file:" ? "http://localhost:5000/api" : "/api");
+const API = window.location.protocol === "file:" ? "http://localhost:5000/api" : "/api";
 
 // ─── Auth State ──────────────────────────────────
 let currentUser = null; // { user_id, username, role }
@@ -96,7 +92,7 @@ function applyRoleUI(role) {
     const badge = document.getElementById("user-role-badge");
     if (badge) {
         badge.textContent = isAdmin ? "ADMIN" : "TEACHER";
-        badge.className = isAdmin ? "role-badge role-admin" : "role-badge role-teacher";
+        badge.className = isAdmin ? "badge badge-admin" : "badge badge-teacher";
     }
 }
 
@@ -187,7 +183,9 @@ function activateApp(userData) {
     applyRoleUI(userData.role);
 
     document.getElementById("login-screen").classList.add("hidden");
-    document.getElementById("app").classList.remove("hidden");
+    const appEl = document.getElementById("app");
+    appEl.classList.remove("hidden");
+    appEl.classList.add("flex");
 
     // Start on appropriate default page
     const defaultPage = userData.role === "teacher" ? "attendance" : "dashboard";
@@ -260,10 +258,7 @@ document.getElementById("logout-btn").addEventListener("click", async () => {
     forceLogout();
 });
 
-// ─── Sidebar toggle ──────────────────────────────
-document.getElementById("sidebar-toggle").addEventListener("click", () => {
-    document.getElementById("sidebar").classList.toggle("collapsed");
-});
+// ─── Sidebar toggle (mobile) ─────────────────────
 document.getElementById("mobile-menu-btn").addEventListener("click", () => {
     document.getElementById("sidebar").classList.toggle("open");
 });
