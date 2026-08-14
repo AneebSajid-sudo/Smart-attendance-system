@@ -9,19 +9,28 @@ def _b64_to_rgb(b64_string):
     Decode a base64 image string and return a proper uint8 RGB numpy array
     that face_recognition can consume, plus the original BGR frame.
     """
+    import io
     if "," in b64_string:
         b64_string = b64_string.split(",")[1]
 
-    img_bytes = base64.b64decode(b64_string)
-    nparr = np.frombuffer(img_bytes, np.uint8)
-    frame_bgr = cv2.imdecode(nparr, cv2.IMREAD_COLOR)  # uint8 BGR
+    try:
+        img_bytes = base64.b64decode(b64_string)
+        file = io.BytesIO(img_bytes)
+        # Use face_recognition's native loader which uses Pillow (handles RGB safely)
+        frame_rgb = face_recognition.load_image_file(file, mode="RGB")
+        frame_rgb = np.ascontiguousarray(frame_rgb, dtype=np.uint8)
+        
+        # Keep OpenCV backwards compatible BGR for cv2 drawings
+        frame_bgr = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
 
-    if frame_bgr is None:
+        # Ignore invalid/placeholder small canvas paints
+        if frame_bgr.shape[0] < 20 or frame_bgr.shape[1] < 20:
+            return None, None
+            
+        return frame_rgb, frame_bgr
+    except Exception as e:
+        print(f"Failed to load image safely: {e}")
         return None, None
-
-    # face_recognition requires uint8 RGB — explicit copy ensures contiguous array
-    frame_rgb = np.ascontiguousarray(cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB), dtype=np.uint8)
-    return frame_rgb, frame_bgr
 
 def encode_face_from_base64(b64_string):
     """
